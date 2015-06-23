@@ -68,35 +68,28 @@ If memory is not fully being used, and the CPU is not fully being used, there ma
 
 <!-- If it is not installed, on Ubuntu or Debian Linux, install it with
 
-    sudo apt-get install htop
+    sudo apt-get install htop iotop
 
 On Fedora or CentOS use
 
-    sudo yum install htop
+    sudo yum install htop iotop
 
 Finally, on Mac OS X use [Homebrew](http://brew.sh):
 
-    brew install htop -->
-
-This command gives a lot of information in a single screen. The first line on the right shows the so-called 'load average'. This number is a combined measure of how much the system is being used. This makes it less useful for diagnosing your system. On the third line, you see the CPU usage. `%us` is the user usage. If this is
-
-    ps aux
+    brew install htop iotop -->
 
 #### Super-user tools
 
-The `htop` tool is similar to top:
+On Linux or OS X
 
-    sudo yum install htop
-    sudo apt-get install htop
-    sudo htop
-
-will tell you all the information of top with a graphical output. On OS X, 
-
+    iostat
     sudo iotop
 
+will give you all writing and reading processes, and how much data they are reading. Network traffic can be gathered with:
+
+    sudo iftop
 
 ## Exercises
-
 
 The following R code snippets test your system dearly (save all work):
 
@@ -109,3 +102,48 @@ Before you run, make sure you can cancel the command. Inspect what happens in th
 
 How many cores are being used?
 
+## Timing your application
+
+If you write your own R application, to find out what functions are taking a lot of time, write
+
+    ptm <- proc.time()
+    # your code
+    for (i in 1:2000000) { sqrt(rnorm(0)) }
+    print(proc.time() - ptm)
+
+It will give you three numbers:
+
+- user: the amount of CPU time used.
+- system: the amount of CPU time spent on system tasks like creating data structures and doing data transfers.
+- elapsed: wall-clock time elapsed.
+
+Try again with
+
+    ptm <- proc.time()
+    # your code
+    Sys.sleep(3)
+    print(proc.time() - ptm)
+
+and
+
+    ptm <- proc.time()
+    # your code
+    for (i in 1:400) {
+      x = 1:3000000
+      remove(x)
+    }
+    print(proc.time() - ptm)
+
+and see how the numbers differ.
+
+For shell scripts, the `time` command does the same as `proc.time()` in R. For a script called `command.sh` Just run:
+
+    time ./command.sh
+
+## Next steps
+
+The above timing snippets only give a rough estimate. For the next step in getting better performance analysis involve doing so-called profiling. These methods vary per operating system and programming language, but they all provide much more fine-grained information than simple timings.
+
+Further reading about performance analysis (technical):
+- [Brendan Gregg's slides on Linux-performance-analysis-and-tools](http://www.slideshare.net/brendangregg/linux-performance-analysis-and-tools)
+- [The USE method](http://queue.acm.org/detail.cfm?id=2413037)
