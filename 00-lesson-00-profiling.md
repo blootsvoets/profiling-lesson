@@ -109,3 +109,8 @@ Before you run, make sure you can cancel the command. Inspect what happens in th
 
 How many cores are being used?
 
+
+
+REF
+Brendan Gregg's slides  on inux-performance-analysis-and-tools
+http://www.slideshare.net/brendangregg/linux-performance-analysis-and-tools?from_action=save
