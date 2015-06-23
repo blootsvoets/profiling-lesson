@@ -34,9 +34,7 @@ hard drive -->
 
 #### Windows
 
-On Windows, the built in Task Manager gives a lot of information on individual processes and on the total resource usage. You can find the Task Manager by right clicking on the Windows task bar and selecting the Task Manager. On the second tab, you can find individual process performance
-
-Task Manager
+On Windows, the built in Task Manager gives a lot of information on individual processes and on the total resource usage. You can find the Task Manager by right clicking on the Windows task bar and selecting the Task Manager. On the second tab, you can find individual process performance. In the Performance tab, there is a Resources button to show what the system performance is.
 
 #### Linux
 
