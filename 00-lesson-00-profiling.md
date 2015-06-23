@@ -15,8 +15,7 @@ When you start processing larger datasets on your *local* machine, you may disco
 - hard drive space
 - hard drive speed 
 
-During this lesson we will use command-line tools to try to find out what the bottleneck is for your particular task. The bottlenecks are usually job-specific. The diagnostics usually tie in deeply into the computer architecture and so the lesson will require super-user privileges.
-
+During this lesson we will use command-line tools to try to find out what the bottleneck is for your particular task. The bottlenecks are usually job-specific. The diagnostics usually tie in deeply into the computer architecture so some of the tools will require super-user (root) privileges.
 
 <!--
 Make diagram to decide
@@ -28,25 +27,23 @@ hard drive space: external hard drive - cloud / cluster with large file system -
 hard drive -->
 
 
-## Lesson 
+##Graphical tools
 
-###Graphical tools
-
-#### Windows
+### Windows
 
 On Windows, the built in Task Manager gives a lot of information on individual processes and on the total resource usage. You can find the Task Manager by right clicking on the Windows task bar and selecting the Task Manager. On the second tab, you can find individual process performance. In the Performance tab, there is a Resources button to show what the system performance is.
 
-#### Linux
+### Linux
 
 GUI `System Monitor`
 
-#### Mac OS X
+### Mac OS X
 
 On Mac OS X the primary diagnostics tool is the Activity Monitor, found in `/Applications/Utilities/Activity Manager.app` (or use Spotlight and search Activity Monitor).
 
-### Command line tools
+## Command line tools
 
-General user tools that are installed on most Linux and Mac OS X systems are `top` and `ps`. The former is an interactive tool showing the current system status and all running processes. A version with more information is htop:
+General user tools that are installed on most Linux and Mac OS X systems are `top` and `ps aux`. The former is an interactive tool showing the current system status and all running processes. A version with more information is htop:
 
     htop
 
@@ -56,13 +53,15 @@ At the top, it will show you the processor activity of your system. Each process
 
 ## Approach
 
-When your application is running, first look memory usage. Once about 80% of your memory is used, the system will remove caches and start doing operations from disk. If you run into this problem, a first step would be to see if your application can run with smaller chunks of data. If this is not possible, you can either get a machine with additional RAM memory or start a virtual machine on the Cloud with more memory than you have now. By using `htop` again, you can find out if the new machine does have enough memory. Alternatively, you can keep runninng application even after the memory of your machine is full, and see if it finishes. You can note the maximum memory usage in the VIRT column of the application. This number includes memory on disk, so it also gives relevant information once the system is using excessive memory.
+When your application is running, first look memory usage. Once about 80% of your memory is used, the system will remove caches and start doing operations from disk. This is called swapping. If you run into this problem, a first step would be to see if your application can run with smaller chunks of data. If this is not possible, you can either get a machine with additional RAM memory or start a virtual machine on the Cloud with more memory than you have now. By using `htop` again, you can find out if the new machine does have enough memory. Alternatively, you can keep runninng application even after the memory of your machine is full, and see if it finishes. You can note the maximum memory usage in the VIRT column of the application. This number includes memory on disk, so it also gives relevant information once the system is using excessive memory.
 
 The advantage of using a Cloud virtual machine is that it is very easy to experiment with different memory sizes.
 
-Next, the application could simply be doing a lot of calculations using only one core. Since most machines have multiple cores, you are not using its full potential. In `htop`, you can see if your application is using multiple cores if the `%CPU` is more than 100%. Although somewhat counter-intuitive, the `%CPU` shows the percentage of *one* CPU being used. On a machine with 2 CPU cores, the optimal number would be 200%. The full potential of the system is being used when all the bars are full. Many demanding applications and algorithms allow you to specify the number of cores you want to use. Use the number of cores you have on your system. Please note that memory usage usually also increases when using multiple cores, so it would be wise to revisit the previous paragraph. On a virtual machine, you can increase the number of CPU cores on a virtual machine. Only do this as long as all the CPU bars at the top of `htop` are being filled. Ideally, if you are using `N` CPUs, using an additional CPU will decrease the time to completion `1 / (N + 1)`.
+Next, the application could simply be doing a lot of calculations using only one core. Since most machines have multiple cores, you are not using its full potential. In the performance tools (specifically `htop`), you can see if your application is using multiple cores if the `%CPU` is more than 100%. Although somewhat counter-intuitive, the `%CPU` shows the percentage of *one* CPU being used. On a machine with 2 CPU cores, the optimal number would be 200%. The full potential of the system is being used when all the bars are full. Many demanding applications and algorithms allow you to specify the number of cores you want to use. Use the number of cores you have on your system. Please note that memory usage usually also increases when using multiple cores, so it would be wise to revisit the previous paragraph. On a virtual machine, you can increase the number of CPU cores on a virtual machine. Only do this as long as all the CPU bars at the top of `htop` are being filled. When an application takes `T` seconds on `N` cores, it should take `T * N / M` seconds when using `M` CPU cores.
 
 If memory is not fully being used, and the CPU is not fully being used, there may be a I/O bottleneck (input/output). These usually stem from hard drive speed or from networking. As you probably know, reading from or writing to hard drives is much slower than using computer memory. When an application needs to read a lot of data from file or from a database, the CPU will be waiting on data to arrive, and so will you. If this is your largest bottleneck, using a Cloud Virtual Machine will most likely not help you: there the problem will be worse because the file system is shared between multiple users. If the data is on an external hard drive, it may help to put it on a local hard drive while processing, and putting it back after the application is finished. If your hard drive is almost full, move or remove files until at most 80% of the disk is being used. If your machine does not have an SSD (Solid State Drive), arranging a machine with SSD or installing one would be a good investment.
+
+Finally, an advantage of using virtual machines on the Cloud is that you can start multiple machines simultaneously to process different inputs or datasets. This type of parallelisation cannot be achieved efficiently on a single machine. Again, 
 
 <!-- If it is not installed, on Ubuntu or Debian Linux, install it with
 
