@@ -7,7 +7,7 @@ minutes: 15
 
 ## Learning Objectives 
 
-When you start processing larger datasets on your *local* machine, you may discover that it is not going fast enough. And to speed the calculations up, you have to find out what the bottleneck is. The main bottlenecks are usually the following:
+When you start processing larger datasets on your *local* machine, you may discover that it is not going fast enough. And to speed the calculations up, you have to find out what the bottleneck is. The main bottlenecks are usually one or more of the following:
 
 - memory size
 - CPU core speed
