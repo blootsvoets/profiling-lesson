@@ -49,11 +49,28 @@ General user tools that are installed on most Linux and Mac OS X systems are `to
 
 On OS X, you need to run `sudo htop`.
 
-At the top, it will show you the processor activity of your system. Each processor is numbered. Below, under `Mem`, it shows how much memory is being used. Below that, in the `Swp` column.
+At the top, it will show you the processor activity of your system. Each processor is numbered. Below, under `Mem`, it shows how much memory is being used. Below that, in the `Swp` column, showing how much memory is in swap.
+
+Disk space can be assessed with
+
+    df -h
+
+This also shows virtual file systems, usually only the largest file systems are relevant.
+
+#### Super-user tools
+
+On Linux or OS X
+
+    iostat
+    sudo iotop
+
+will give you all writing and reading processes, and how much data they are reading. Network traffic can be gathered with:
+
+    sudo iftop
 
 ## Approach
 
-When your application is running, first look memory usage. Once about 80% of your memory is used, the system will remove caches and start doing operations from disk. This is called swapping. If you run into this problem, a first step would be to see if your application can run with smaller chunks of data. If this is not possible, you can either get a machine with additional RAM memory or start a virtual machine on the Cloud with more memory than you have now. By using `htop` again, you can find out if the new machine does have enough memory. Alternatively, you can keep runninng application even after the memory of your machine is full, and see if it finishes. You can note the maximum memory usage in the VIRT column of the application. This number includes memory on disk, so it also gives relevant information once the system is using excessive memory.
+When your application is running, first look memory usage. Once about 80% of your memory is used, the system will remove caches and start doing operations from disk. If you run into this problem, a first step would be to see if your application can run with smaller chunks of data. If this is not possible, you can either get a machine with additional RAM memory or start a virtual machine on the Cloud with more memory than you have now. By using `htop` again, you can find out if the new machine does have enough memory. Alternatively, you can keep runninng the application even after the memory of your machine is full, and see if it finishes. You can note the maximum memory usage in the VIRT column of the application. This number includes memory on disk, so it also gives relevant information once the system is using memory above the physical limit.
 
 The advantage of using a Cloud virtual machine is that it is very easy to experiment with different memory sizes.
 
@@ -61,7 +78,7 @@ Next, the application could simply be doing a lot of calculations using only one
 
 If memory is not fully being used, and the CPU is not fully being used, there may be a I/O bottleneck (input/output). These usually stem from hard drive speed or from networking. As you probably know, reading from or writing to hard drives is much slower than using computer memory. When an application needs to read a lot of data from file or from a database, the CPU will be waiting on data to arrive, and so will you. If this is your largest bottleneck, using a Cloud Virtual Machine will most likely not help you: there the problem will be worse because the file system is shared between multiple users. If the data is on an external hard drive, it may help to put it on a local hard drive while processing, and putting it back after the application is finished. If your hard drive is almost full, move or remove files until at most 80% of the disk is being used. If your machine does not have an SSD (Solid State Drive), arranging a machine with SSD or installing one would be a good investment.
 
-Finally, an advantage of using virtual machines on the Cloud is that you can start multiple machines simultaneously to process different inputs or datasets. This type of parallelisation cannot be achieved efficiently on a single machine. Again, 
+Finally, an advantage of using virtual machines on the Cloud is that you can start multiple machines simultaneously to process different inputs or datasets. This type of parallelisation cannot be achieved efficiently on a single machine. Another way to reach this type of parallelisation is to run jobs on a computing cluster.
 
 <!-- If it is not installed, on Ubuntu or Debian Linux, install it with
 
@@ -75,17 +92,6 @@ Finally, on Mac OS X use [Homebrew](http://brew.sh):
 
     brew install htop iotop -->
 
-#### Super-user tools
-
-On Linux or OS X
-
-    iostat
-    sudo iotop
-
-will give you all writing and reading processes, and how much data they are reading. Network traffic can be gathered with:
-
-    sudo iftop
-
 ## Exercises
 
 The following R code snippets test your system dearly (save all work):
@@ -93,11 +99,24 @@ The following R code snippets test your system dearly (save all work):
     x = data.frame(1:200000)
     for (i in 1:200000) { x[i] = 1:200000 }
 
-Before you run, make sure you can cancel the command. Inspect what happens in the `top` command or your GUI.
+Before you run, make sure you can cancel the command. Inspect what happens in the `htop` command or your GUI.
 
-    for (i in 1:20000000) { sqrt(nrand(0)) }
+    for (i in 1:2000000) { sqrt(rnorm(1, mean=i)) }
 
 How many cores are being used?
+
+On the Bash shell run
+
+    for i in 1 2 3 4
+    do
+        fastqc FILENAME &
+    done
+
+How many cores are being used? How is the memory usage? If it is too much, run
+
+    killall fastqc
+
+to stop all `fastqc` processes. Or type `fg` followed by Ctrl-C, four times.
 
 ## Timing your application
 
@@ -105,7 +124,7 @@ If you write your own R application, to find out what functions are taking a lot
 
     ptm <- proc.time()
     # your code
-    for (i in 1:2000000) { sqrt(rnorm(0)) }
+    for (i in 1:2000000) { sqrt(rnorm(1, mean=i)) }
     print(proc.time() - ptm)
 
 It will give you three numbers:
@@ -141,6 +160,6 @@ For shell scripts, the `time` command does the same as `proc.time()` in R. For a
 
 The above timing snippets only give a rough estimate. For the next step in getting better performance analysis involve doing so-called profiling. These methods vary per operating system and programming language, but they all provide much more fine-grained information than simple timings.
 
-Further reading about performance analysis (technical):
+Further reading about performance analysis (with technical contents):
 - [Brendan Gregg's slides on Linux-performance-analysis-and-tools](http://www.slideshare.net/brendangregg/linux-performance-analysis-and-tools)
 - [The USE method](http://queue.acm.org/detail.cfm?id=2413037)
