@@ -62,6 +62,9 @@ When your application is running, first look memory usage. Once about 80% of you
 
 The advantage of using a Cloud virtual machine is that it is very easy to experiment with different memory sizes.
 
+Next, the application could simply be doing a lot of calculations using only one core. Since most machines have multiple cores, you are not using its full potential. In `htop`, you can see if your application is using multiple cores if the `%CPU` is more than 100%. Although somewhat counter-intuitive, the `%CPU` shows the percentage of *one* CPU being used. On a machine with 2 CPU cores, the optimal number would be 200%. The full potential of the system is being used when all the bars are full. Many demanding applications and algorithms allow you to specify the number of cores you want to use. Use the number of cores you have on your system. Please note that memory usage usually also increases when using multiple cores, so it would be wise to revisit the previous paragraph. On a virtual machine, you can increase the number of CPU cores on a virtual machine. Only do this as long as all the CPU bars at the top of `htop` are being filled. Ideally, if you are using `N` CPUs, using an additional CPU will decrease the time to completion `1 / (N + 1)`.
+
+If memory is not fully being used, and the CPU is not fully being used, there may be a I/O bottleneck (input/output). These usually stem from hard drive speed or from networking. As you probably know, reading from or writing to hard drives is much slower than using computer memory. When an application needs to read a lot of data from file or from a database, the CPU will be waiting on data to arrive, and so will you. If this is your largest bottleneck, using a Cloud Virtual Machine will most likely not help you: there the problem will be worse because the file system is shared between multiple users. If the data is on an external hard drive, it may help to put it on a local hard drive while processing, and putting it back after the application is finished. If your hard drive is almost full, move or remove files until at most 80% of the disk is being used. If your machine does not have an SSD (Solid State Drive), arranging a machine with SSD or installing one would be a good investment.
 
 <!-- If it is not installed, on Ubuntu or Debian Linux, install it with
 
@@ -104,4 +107,5 @@ Before you run, make sure you can cancel the command. Inspect what happens in th
 
     for (i in 1:20000000) { sqrt(nrand(0)) }
 
-Exercises
+How many cores are being used?
+
